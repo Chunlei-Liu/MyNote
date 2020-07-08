@@ -1,2 +1,3 @@
 # MyNote
-Notepad
+This is a simple Notepad
+Recyclerview+Litepal
