@@ -18,6 +18,7 @@ import org.litepal.LitePal;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class AddContentActivity extends AppCompatActivity {
 
@@ -32,9 +33,9 @@ public class AddContentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_content);
-        content = (EditText) findViewById(R.id.add_content);
-        showTime = (TextView) findViewById(R.id.time_show);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_1);
+        content = findViewById(R.id.add_content);
+        showTime = findViewById(R.id.time_show);
+        Toolbar toolbar = findViewById(R.id.toolbar_1);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {//显示系统返回按钮
@@ -83,11 +84,11 @@ public class AddContentActivity extends AppCompatActivity {
 
                 } else {
                     //取得新增记录时的系统时间
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
                     Date date = new Date(System.currentTimeMillis());
                     String inputText = content.getText().toString();
-                    // 当输入内容正常时进行保存
-                    if (!inputText.equals("") && inputText != null) {
+                    // 当输入内容不为空时进行保存
+                    if (!inputText.equals("")) {
                         Tickler tickler = new Tickler();
                         tickler.setContent(inputText);
                         tickler.setTime(simpleDateFormat.format(date));
