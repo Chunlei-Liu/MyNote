@@ -86,13 +86,20 @@ public class AddContentActivity extends AppCompatActivity {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
                     Date date = new Date(System.currentTimeMillis());
                     String inputText = content.getText().toString();
-                    Tickler tickler = new Tickler();
-                    tickler.setContent(inputText);
-                    tickler.setTime(simpleDateFormat.format(date));
-                    tickler.save();
-                    Toast.makeText(this, "保存成功.", Toast.LENGTH_SHORT).show();
-                    finish();//操作完成结束当前活动
-                    break;
+                    // 当输入内容正常时进行保存
+                    if (!inputText.equals("") && inputText != null) {
+                        Tickler tickler = new Tickler();
+                        tickler.setContent(inputText);
+                        tickler.setTime(simpleDateFormat.format(date));
+                        tickler.save();
+                        Toast.makeText(this, "保存成功.", Toast.LENGTH_SHORT).show();
+                        finish();//操作完成结束当前活动
+                        break;
+                    } else {
+                        Toast.makeText(this, "输入内容为空.", Toast.LENGTH_LONG).show();
+//                        finish();
+                        break;
+                    }
                 }
 
             case android.R.id.home://一定添加android还有下面这行代码，我当时为这搞了半天
