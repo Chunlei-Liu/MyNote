@@ -28,17 +28,17 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<Map<String, String>> contentList = new ArrayList<Map<String, String>>();
+    private List<Map<String, String>> contentList = new ArrayList<>();
     private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton addContent = (FloatingActionButton) findViewById(R.id.add_tickler);
-        // 点击
+        FloatingActionButton addContent = findViewById(R.id.add_tickler);
+        // 点击添加按钮
         addContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        // over
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,14 +65,15 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         contentList.clear();//清空list子项数据，实现刷新list
         initContent();//初始化
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView recyclerView =  findViewById(R.id.recycler_view);
         // 布局样式
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        // 瀑布流
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
         final ContentAdapter adapter = new ContentAdapter(contentList);
-
+        // item点击和长按事件
         adapter.setOnItemClickListener(new ContentAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         for (Tickler tickler : ticklers) {
             String content = tickler.getContent();
             String time = tickler.getTime();
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             map.put("content", content);
             map.put("time", time);
             contentList.add(map);

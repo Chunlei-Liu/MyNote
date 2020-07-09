@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
-
-    <dbname value="TicklerDB"></dbname>
-
-    <version value="1"></version>
-
+    <!-- 数据库名称 -->
+    <dbname value="TicklerDB"/>
+    <!-- 数据库版本 -->
+    <version value="1"/>
+    <!-- 标记类文件信息 -->
     <list>
-        <mapping class="com.example.mynote.Tickler"></mapping>
+        <mapping class="com.example.mynote.Tickler"/>
     </list>
 </litepal>
