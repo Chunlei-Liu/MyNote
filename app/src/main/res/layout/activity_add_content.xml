@@ -44,7 +44,9 @@
             android:id="@+id/add_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="请输入内容"
+            android:autofillHints=""
+            android:hint="@string/act_add_input"
+            android:inputType="text"
             android:textSize="20sp" />
 
     </LinearLayout>

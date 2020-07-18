@@ -18,7 +18,7 @@
             android:layout_margin="8dp"
             android:maxLines="4"
             android:minLines="2"
-            android:text="输入的文本内容"
+            android:text="@string/cont_item"
             android:textSize="20sp" />
 
         <TextView
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="2020年01月01日 00:00:00"
+            android:text="@string/time"
             android:textSize="16sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
