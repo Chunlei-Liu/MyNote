@@ -1,16 +1,33 @@
 package com.example.mynote;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +45,9 @@ public class AddContentActivity extends AppCompatActivity {
     private String time;
     private EditText content;
     private TextView showTime;
+    private ImageView imageView;
+    public static final int CHOOSE_ARTICLE_IMAGE = 22;
+    private String editImagePath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +55,7 @@ public class AddContentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_content);
         content = findViewById(R.id.add_content);
         showTime = findViewById(R.id.time_show);
+        imageView = findViewById(R.id.edit_img);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -50,6 +71,93 @@ public class AddContentActivity extends AppCompatActivity {
         content.setText(showContent);
         if (showContent != null) {
             content.setSelection(showContent.length());//将光标移动到文本最后
+        }
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(AddContentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(AddContentActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                } else {
+                    openAlbum();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case CHOOSE_ARTICLE_IMAGE:
+                if (resultCode == RESULT_OK) {
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        handleImageOnKiKat(data);
+                    } else {
+                        handleImageBeforeKiKat(data);
+                    }
+                }
+                break;
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private void handleImageOnKiKat(Intent data) {
+        String imagePath = null;
+        Uri uri = data.getData();
+        if (DocumentsContract.isDocumentUri(this, uri)) {
+            String docId = DocumentsContract.getDocumentId(uri);
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+            } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                imagePath = getImagePath(contentUri, null);
+            }
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            //如或是content类型的URI就使用普通方法处理
+            imagePath = getImagePath(uri, null);
+
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            //如果是file类型的直接获取图片路径就行
+            imagePath = uri.getPath();
+        }
+        editImagePath = imagePath;
+        // 根据图片路径显示图片
+        diplayImage(imagePath);
+    }
+
+    private void handleImageBeforeKiKat(Intent data) {
+        Uri uri = data.getData();
+        String imagePath = getImagePath(uri, null);
+        diplayImage(imagePath);
+    }
+
+    private void openAlbum() {
+        Intent mIntent = new Intent("android.intent.action.GET_CONTENT");
+        mIntent.setType("image/*");
+        startActivityForResult(mIntent, CHOOSE_ARTICLE_IMAGE);
+    }
+
+    private String getImagePath(Uri uri, String selection) {
+        String path = null;
+        //通过Uri和selection来获取真实的图片路径
+        Cursor cursor = getContentResolver().query(uri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+    }
+
+    private void diplayImage(String imagePath) {
+        if (!TextUtils.isEmpty(imagePath)) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            imageView.setImageBitmap(bitmap);
+        } else {
+            imageView.setImageResource(R.drawable.demo_img);
         }
     }
 
