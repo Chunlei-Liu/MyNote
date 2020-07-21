@@ -7,6 +7,15 @@ public class Tickler extends LitePalSupport {
     private int id;
     private String content;
     private String time;
+    private String articleImagePath;
+
+    public String getArticleImagePath() {
+        return articleImagePath;
+    }
+
+    public void setArticleImagePath(String articleImagePath) {
+        this.articleImagePath = articleImagePath;
+    }
 
     public int getId() {
         return id;

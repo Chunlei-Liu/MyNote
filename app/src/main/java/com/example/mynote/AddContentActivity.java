@@ -39,15 +39,15 @@ import java.util.Locale;
 
 public class AddContentActivity extends AppCompatActivity {
 
-    public static final String CONTENT = "content";
-    public static final String TIME = "time";
+    public static String CONTENT = "content";
+    public static String TIME = "time";
+    public static String editImagePath = "";
     private static final String TAG = "AddContentActivity";
     private String time;
     private EditText content;
     private TextView showTime;
     private ImageView imageView;
     public static final int CHOOSE_ARTICLE_IMAGE = 22;
-    private String editImagePath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +67,9 @@ public class AddContentActivity extends AppCompatActivity {
         Intent intent = getIntent();
         time = intent.getStringExtra(TIME);
         String showContent = intent.getStringExtra(CONTENT);
+        String imagepath = intent.getStringExtra(editImagePath);
+        Log.i(TAG, ">>>,get Extra:" + imagepath);
+        displayImage(imagepath);
         showTime.setText(time);
         content.setText(showContent);
         if (showContent != null) {
@@ -124,13 +127,13 @@ public class AddContentActivity extends AppCompatActivity {
         }
         editImagePath = imagePath;
         // 根据图片路径显示图片
-        diplayImage(imagePath);
+        displayImage(imagePath);
     }
 
     private void handleImageBeforeKiKat(Intent data) {
         Uri uri = data.getData();
         String imagePath = getImagePath(uri, null);
-        diplayImage(imagePath);
+        displayImage(imagePath);
     }
 
     private void openAlbum() {
@@ -152,9 +155,11 @@ public class AddContentActivity extends AppCompatActivity {
         return path;
     }
 
-    private void diplayImage(String imagePath) {
+    // 通过路径显示图像
+    private void displayImage(String imagePath) {
         if (!TextUtils.isEmpty(imagePath)) {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            Log.i(TAG, "show>>>>" + imagePath);
             imageView.setImageBitmap(bitmap);
         } else {
             imageView.setImageResource(R.drawable.demo_img);
@@ -177,6 +182,7 @@ public class AddContentActivity extends AppCompatActivity {
                     String showContent = intent.getStringExtra(CONTENT);
 
                     String inputText = content.getText().toString();
+
                     Tickler tickler = new Tickler();
 //                    Log.e(TAG, "" + inputText);
 //                    Log.e(TAG, "" + showContent.toString());
@@ -200,6 +206,8 @@ public class AddContentActivity extends AppCompatActivity {
                         Tickler tickler = new Tickler();
                         tickler.setContent(inputText);
                         tickler.setTime(simpleDateFormat.format(date));
+                        tickler.setArticleImagePath(editImagePath);
+                        Log.i(TAG, "save>>" + simpleDateFormat.format(date) + "##" + inputText + "##" + editImagePath);
                         tickler.save();
                         Toast.makeText(this, "保存成功.", Toast.LENGTH_SHORT).show();
                         finish();//操作完成结束当前活动

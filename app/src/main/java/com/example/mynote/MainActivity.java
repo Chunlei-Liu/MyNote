@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         contentList.clear();//清空list子项数据，实现刷新list
         initContent();//初始化
-        RecyclerView recyclerView =  findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         // 布局样式
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         // 瀑布流
@@ -75,17 +75,22 @@ public class MainActivity extends AppCompatActivity {
         final ContentAdapter adapter = new ContentAdapter(contentList);
         // item点击和长按事件
         adapter.setOnItemClickListener(new ContentAdapter.OnItemClickListener() {
+            // 点击
             @Override
             public void onClick(int position) {
                 String content = contentList.get(position).get("content");
                 String time = contentList.get(position).get("time");
+                String image = contentList.get(position).get("imagepath");
                 Intent intent = new Intent(MainActivity.this, AddContentActivity.class);
                 intent.putExtra(AddContentActivity.CONTENT, content);
                 intent.putExtra(AddContentActivity.TIME, time);
+                intent.putExtra(AddContentActivity.editImagePath, image);
+                Log.i(TAG, ">>>,put," + image);
                 startActivity(intent);
 //                Log.e(TAG, "点击！！" + position);
             }
 
+            // 长按
             @Override
             public void onLongClick(final int position) {
 //                Log.e(TAG, "长按！！" + position);
@@ -119,9 +124,11 @@ public class MainActivity extends AppCompatActivity {
         for (Tickler tickler : ticklers) {
             String content = tickler.getContent();
             String time = tickler.getTime();
+            String imgpath = tickler.getArticleImagePath();
             Map<String, String> map = new HashMap<>();
             map.put("content", content);
             map.put("time", time);
+            map.put("imagepath", imgpath);
             contentList.add(map);
         }
     }
