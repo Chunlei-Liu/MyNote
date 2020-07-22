@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,9 +23,20 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.graphics.Color.*;
+import static com.example.mynote.R.drawable.back_img1;
+import static com.example.mynote.R.drawable.back_img2;
+import static com.example.mynote.R.drawable.back_img3;
+import static com.example.mynote.R.drawable.back_img4;
+import static com.example.mynote.R.drawable.back_img5;
+import static com.example.mynote.R.drawable.back_img6;
+import static com.example.mynote.R.drawable.back_img7;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -116,7 +128,31 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
+        // 随机更改背景
+        int randomNumber = (int) (Math.random() * 7);
+        switch (randomNumber) {
+            case 0:
+                recyclerView.setBackgroundResource(back_img1);
+                break;
+            case 1:
+                recyclerView.setBackgroundResource(back_img2);
+                break;
+            case 2:
+                recyclerView.setBackgroundResource(back_img3);
+                break;
+            case 3:
+                recyclerView.setBackgroundResource(back_img4);
+                break;
+            case 4:
+                recyclerView.setBackgroundResource(back_img5);
+                break;
+            case 5:
+                recyclerView.setBackgroundResource(back_img6);
+                break;
+            case 6:
+                recyclerView.setBackgroundResource(back_img7);
+                break;
+        }
     }
 
     public void initContent() {
@@ -132,4 +168,6 @@ public class MainActivity extends AppCompatActivity {
             contentList.add(map);
         }
     }
+
+
 }
