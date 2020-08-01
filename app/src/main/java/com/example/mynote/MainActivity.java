@@ -58,6 +58,32 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        // 随机更改背景
+        int randomNumber = (int) (Math.random() * 7);
+        switch (randomNumber) {
+            case 0:
+                recyclerView.setBackgroundResource(back_img1);
+                break;
+            case 1:
+                recyclerView.setBackgroundResource(back_img2);
+                break;
+            case 2:
+                recyclerView.setBackgroundResource(back_img3);
+                break;
+            case 3:
+                recyclerView.setBackgroundResource(back_img4);
+                break;
+            case 4:
+                recyclerView.setBackgroundResource(back_img5);
+                break;
+            case 5:
+                recyclerView.setBackgroundResource(back_img6);
+                break;
+            case 6:
+                recyclerView.setBackgroundResource(back_img7);
+                break;
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -128,31 +154,7 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        // 随机更改背景
-        int randomNumber = (int) (Math.random() * 7);
-        switch (randomNumber) {
-            case 0:
-                recyclerView.setBackgroundResource(back_img1);
-                break;
-            case 1:
-                recyclerView.setBackgroundResource(back_img2);
-                break;
-            case 2:
-                recyclerView.setBackgroundResource(back_img3);
-                break;
-            case 3:
-                recyclerView.setBackgroundResource(back_img4);
-                break;
-            case 4:
-                recyclerView.setBackgroundResource(back_img5);
-                break;
-            case 5:
-                recyclerView.setBackgroundResource(back_img6);
-                break;
-            case 6:
-                recyclerView.setBackgroundResource(back_img7);
-                break;
-        }
+
     }
 
     public void initContent() {
