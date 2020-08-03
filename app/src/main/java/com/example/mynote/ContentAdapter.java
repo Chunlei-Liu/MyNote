@@ -30,8 +30,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         public ViewHolder(View view) {
             super(view);
             ticklerView = view;
-            contentText =  view.findViewById(R.id.show_content);
-            showTime =  view.findViewById(R.id.show_time);
+            contentText = view.findViewById(R.id.show_content);
+            showTime = view.findViewById(R.id.show_time);
         }
     }
 
