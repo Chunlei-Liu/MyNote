@@ -31,21 +31,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.litepal.LitePal;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class AddContentActivity extends AppCompatActivity {
 
-    public static String CONTENT = "content";
-    public static String TIME = "time";
+    public static final String CONTENT = "content";
+    public static final String TIME = "time";
     public static String editImagePath = "";
     private static final String TAG = "AddContentActivity";
     private String time;
     private EditText content;
-    private TextView showTime;
     private ImageView imageView;
     public static final int CHOOSE_ARTICLE_IMAGE = 22;
 
@@ -54,7 +52,7 @@ public class AddContentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_content);
         content = findViewById(R.id.add_content);
-        showTime = findViewById(R.id.time_show);
+        TextView showTime = findViewById(R.id.time_show);
         imageView = findViewById(R.id.edit_img);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
         setSupportActionBar(toolbar);
@@ -90,16 +88,14 @@ public class AddContentActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case CHOOSE_ARTICLE_IMAGE:
-                if (resultCode == RESULT_OK) {
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        handleImageOnKiKat(data);
-                    } else {
-                        handleImageBeforeKiKat(data);
-                    }
+        if (requestCode == CHOOSE_ARTICLE_IMAGE) {
+            if (resultCode == RESULT_OK) {
+                if (Build.VERSION.SDK_INT >= 19) {
+                    handleImageOnKiKat(data);
+                } else {
+                    handleImageBeforeKiKat(data);
                 }
-                break;
+            }
         }
     }
 
@@ -109,15 +105,15 @@ public class AddContentActivity extends AppCompatActivity {
         Uri uri = data.getData();
         if (DocumentsContract.isDocumentUri(this, uri)) {
             String docId = DocumentsContract.getDocumentId(uri);
-            if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+            if ("com.android.providers.media.documents".equals(Objects.requireNonNull(uri).getAuthority())) {
                 String id = docId.split(":")[1];
                 String selection = MediaStore.Images.Media._ID + "=" + id;
                 imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
             } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
-                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.parseLong(docId));
                 imagePath = getImagePath(contentUri, null);
             }
-        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+        } else if ("content".equalsIgnoreCase(Objects.requireNonNull(uri).getScheme())) {
             //如或是content类型的URI就使用普通方法处理
             imagePath = getImagePath(uri, null);
 

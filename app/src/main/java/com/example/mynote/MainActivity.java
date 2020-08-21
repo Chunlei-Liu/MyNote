@@ -4,13 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,24 +21,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.graphics.Color.*;
 import static com.example.mynote.R.drawable.back_img1;
 import static com.example.mynote.R.drawable.back_img2;
 import static com.example.mynote.R.drawable.back_img3;
-import static com.example.mynote.R.drawable.back_img4;
-import static com.example.mynote.R.drawable.back_img5;
-import static com.example.mynote.R.drawable.back_img6;
-import static com.example.mynote.R.drawable.back_img7;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<Map<String, String>> contentList = new ArrayList<>();
+    private final List<Map<String, String>> contentList = new ArrayList<>();
     private static final String TAG = "MainActivity";
 
     @Override
@@ -60,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         });
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         // 随机更改背景
-        int randomNumber = (int) (Math.random() * 7);
+        int randomNumber = (int) (Math.random() * 3);
         switch (randomNumber) {
             case 0:
                 recyclerView.setBackgroundResource(back_img1);
@@ -70,18 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 2:
                 recyclerView.setBackgroundResource(back_img3);
-                break;
-            case 3:
-                recyclerView.setBackgroundResource(back_img4);
-                break;
-            case 4:
-                recyclerView.setBackgroundResource(back_img5);
-                break;
-            case 5:
-                recyclerView.setBackgroundResource(back_img6);
-                break;
-            case 6:
-                recyclerView.setBackgroundResource(back_img7);
                 break;
         }
     }

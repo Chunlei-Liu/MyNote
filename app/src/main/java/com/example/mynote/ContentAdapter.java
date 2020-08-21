@@ -1,31 +1,25 @@
 package com.example.mynote;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.litepal.LitePal;
 
 import java.util.List;
 import java.util.Map;
 
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder> {
 
-    private List<Map<String, String>> mContentList;
+    private final List<Map<String, String>> mContentList;
     private OnItemClickListener mOnItemClickListener;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        View ticklerView;
-        TextView contentText;
-        TextView showTime;
+        final View ticklerView;
+        final TextView contentText;
+        final TextView showTime;
 
         public ViewHolder(View view) {
             super(view);
@@ -45,8 +39,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_item, parent, false);
         //设置子项点击事件，并传递数据到添加页
-        final ViewHolder holder = new ViewHolder(view);
-        return holder;
+        return new ViewHolder(view);
     }
 
     @Override
