@@ -9,7 +9,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,10 +25,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,113 +39,131 @@ import java.util.Objects;
 
 public class AddContentActivity extends AppCompatActivity {
 
-    public static final String CONTENT = "content";
-    public static final String TIME = "time";
-    public static String editImagePath = "";
     private static final String TAG = "AddContentActivity";
-    private String time;
-    private EditText content;
+    private String show_time;
+    private String show_image;
+    private String show_content;
+    // 当前修改后的图像路径
+    private String tmp_img;
+
+    private EditText editText_content;
     private ImageView imageView;
-    public static final int CHOOSE_ARTICLE_IMAGE = 22;
+    public static final int CHOOSE_IMAGE = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_content);
-        content = findViewById(R.id.add_content);
-        TextView showTime = findViewById(R.id.time_show);
-        imageView = findViewById(R.id.edit_img);
+        // 绑定控件
+        editText_content = findViewById(R.id.add_content);
+        ToggleButton toggleButton = findViewById(R.id.add_togglebutton);
+        TextView textView_time = findViewById(R.id.time_show);
         Toolbar toolbar = findViewById(R.id.toolbar_1);
+        imageView = findViewById(R.id.edit_img);
+
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {//显示系统返回按钮
+        // 显示返回按钮
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        //取得内容和时间
+        // 取得内容和时间
         Intent intent = getIntent();
-        time = intent.getStringExtra(TIME);
-        String showContent = intent.getStringExtra(CONTENT);
-        String imagepath = intent.getStringExtra(editImagePath);
-        Log.i(TAG, ">>>,get Extra:" + imagepath);
-        displayImage(imagepath);
-        showTime.setText(time);
-        content.setText(showContent);
-        if (showContent != null) {
-            content.setSelection(showContent.length());//将光标移动到文本最后
+        show_time = intent.getStringExtra("EXT_time");
+        show_content = intent.getStringExtra("EXT_content");
+        show_image = intent.getStringExtra("EXT_image");
+        // 判断新建还是修改
+        Log.i(TAG, ">>>获得的图像：" + show_image);
+        textView_time.setText(show_time);
+        editText_content.setText(show_content);
+
+        // 移动光标到末尾
+        if (show_content != null && !show_content.equals("")) {
+            editText_content.setSelection(show_content.length());
         }
-        imageView.setOnClickListener(new View.OnClickListener() {
+        // 判读是否显示图像
+        if (show_image != null && !show_image.equals("")) {
+            toggleButton.setChecked(true);
+            displayImage(show_image);
+        }
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(AddContentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(AddContentActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    imageView.setVisibility(View.VISIBLE);
+                    Log.i(TAG, ">>>选择使用图像");
+                    imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (ContextCompat.checkSelfPermission(AddContentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(AddContentActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                            } else {
+                                openAlbum();
+                            }
+                        }
+                    });
                 } else {
-                    openAlbum();
+                    imageView.setVisibility(View.INVISIBLE);
+                    tmp_img = "";
                 }
             }
         });
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CHOOSE_ARTICLE_IMAGE) {
+        if (requestCode == CHOOSE_IMAGE) {
             if (resultCode == RESULT_OK) {
-                if (Build.VERSION.SDK_INT >= 19) {
-                    handleImageOnKiKat(data);
-                } else {
-                    handleImageBeforeKiKat(data);
-                }
+                handleImageOnKiKat(Objects.requireNonNull(data));
             }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void handleImageOnKiKat(Intent data) {
         String imagePath = null;
         Uri uri = data.getData();
+        Log.i(TAG, ">>>uri: " + uri);
         if (DocumentsContract.isDocumentUri(this, uri)) {
+            // 如果是document类型的 uri, 则通过document id来进行处理
             String docId = DocumentsContract.getDocumentId(uri);
+            Log.i(TAG, ">>>docId: " + docId);
             if ("com.android.providers.media.documents".equals(Objects.requireNonNull(uri).getAuthority())) {
                 String id = docId.split(":")[1];
+                Log.i(TAG, ">>>id: " + id);
                 String selection = MediaStore.Images.Media._ID + "=" + id;
+                Log.i(TAG, ">>>selection: " + selection);
                 imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+                Log.i(TAG, ">>>imagePath: " + imagePath);
             } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
                 Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.parseLong(docId));
                 imagePath = getImagePath(contentUri, null);
             }
-        } else if ("content".equalsIgnoreCase(Objects.requireNonNull(uri).getScheme())) {
-            //如或是content类型的URI就使用普通方法处理
-            imagePath = getImagePath(uri, null);
-
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            //如果是file类型的直接获取图片路径就行
-            imagePath = uri.getPath();
         }
-        editImagePath = imagePath;
+        tmp_img = imagePath;
         // 根据图片路径显示图片
         displayImage(imagePath);
     }
 
-    private void handleImageBeforeKiKat(Intent data) {
-        Uri uri = data.getData();
-        String imagePath = getImagePath(uri, null);
-        displayImage(imagePath);
-    }
 
     private void openAlbum() {
         Intent mIntent = new Intent("android.intent.action.GET_CONTENT");
+        // 指定显示图像
         mIntent.setType("image/*");
-        startActivityForResult(mIntent, CHOOSE_ARTICLE_IMAGE);
+        startActivityForResult(mIntent, CHOOSE_IMAGE);
     }
 
     private String getImagePath(Uri uri, String selection) {
         String path = null;
         //通过Uri和selection来获取真实的图片路径
         Cursor cursor = getContentResolver().query(uri, null, selection, null, null);
+        Log.i(TAG, ">>>cursor: " + cursor);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                Log.i(TAG, ">>>path: " + path);
             }
             cursor.close();
         }
@@ -157,8 +176,6 @@ public class AddContentActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             Log.i(TAG, "show>>>>" + imagePath);
             imageView.setImageBitmap(bitmap);
-        } else {
-            imageView.setImageResource(R.drawable.demo_img);
         }
     }
 
@@ -173,49 +190,47 @@ public class AddContentActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_content:
                 //判断当前操作是新增还是修改
-                if (time != null) {
+                if (show_time != null) {
+                    //noinspection unused
                     Intent intent = getIntent();
-                    String showContent = intent.getStringExtra(CONTENT);
 
-                    String inputText = content.getText().toString();
+                    String inputText = editText_content.getText().toString();
 
-                    Tickler tickler = new Tickler();
-//                    Log.e(TAG, "" + inputText);
-//                    Log.e(TAG, "" + showContent.toString());
+                    Log.i(TAG, ">>>show_image：" + show_image);
+                    Log.i(TAG, ">>>tmp_img：" + tmp_img);
+                    Note note = new Note();
                     // 当内容与之前不相同是进行修改操作
-                    if (!inputText.equals(showContent)) {
-                        tickler.setContent(inputText);
-                        tickler.updateAll("time=?", time);
+                    if (!inputText.equals(show_content) || (tmp_img != null && !tmp_img.equals(show_image))) {
+                        note.setContent(inputText);
+                        note.setArticleImagePath(tmp_img);
+                        note.updateAll("time=?", show_time);
                         Toast.makeText(this, "修改成功.", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG, "Save(修改)>>>" + show_image);
                     }
                     finish();
-                    break;
-
-
                 } else {
                     //取得新增记录时的系统时间
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
                     Date date = new Date(System.currentTimeMillis());
-                    String inputText = content.getText().toString();
+                    String inputText = editText_content.getText().toString();
                     // 当输入内容不为空时进行保存
                     if (!inputText.equals("")) {
-                        Tickler tickler = new Tickler();
-                        tickler.setContent(inputText);
-                        tickler.setTime(simpleDateFormat.format(date));
-                        tickler.setArticleImagePath(editImagePath);
-                        Log.i(TAG, "save>>" + simpleDateFormat.format(date) + "##" + inputText + "##" + editImagePath);
-                        tickler.save();
+                        Note note = new Note();
+                        note.setContent(inputText);
+                        note.setTime(simpleDateFormat.format(date));
+                        note.setArticleImagePath(tmp_img);
+                        Log.i(TAG, "Save(新增)>>>" + simpleDateFormat.format(date) + "##" + inputText + "##" + show_image);
+                        note.save();
                         Toast.makeText(this, "保存成功.", Toast.LENGTH_SHORT).show();
                         finish();//操作完成结束当前活动
-                        break;
                     } else {
-                        Toast.makeText(this, "输入内容为空.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "内容为空.", Toast.LENGTH_SHORT).show();
 //                        finish();
-                        break;
                     }
                 }
-
-            case android.R.id.home://一定添加android还有下面这行代码，我当时为这搞了半天
+                break;
+            //一定添加android还有下面这行代码，我当时为这搞了半天
+            case android.R.id.home:
                 onBackPressed();
                 return true;
             default:

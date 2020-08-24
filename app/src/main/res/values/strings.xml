@@ -3,4 +3,8 @@
     <string name="act_add_input">请输入内容</string>
     <string name="cont_item">输入的文本内容</string>
     <string name="time">2020年01月01日 00:00:00</string>
+    <string name="about_text">记录美好生活。</string>
+    <string name="toggle_off">未添加图像</string>
+    <string name="toggle_on">已使用图像</string>
+    <string name="todo">TODO</string>
 </resources>

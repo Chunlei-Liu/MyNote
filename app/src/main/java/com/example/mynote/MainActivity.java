@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton addContent = findViewById(R.id.add_tickler);
+        FloatingActionButton addContent = findViewById(R.id.add_note);
         // 点击添加按钮
         addContent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,14 +78,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {//每次活动有不可见变可见时调用
+    protected void onStart() {
         super.onStart();
-        contentList.clear();//清空list子项数据，实现刷新list
-        initContent();//初始化
+        contentList.clear();
+        // 初始化数据
+        initContent();
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        // 布局样式
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        // 瀑布流
+        // 瀑布流布局样式
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
@@ -99,33 +98,29 @@ public class MainActivity extends AppCompatActivity {
                 String time = contentList.get(position).get("time");
                 String image = contentList.get(position).get("imagepath");
                 Intent intent = new Intent(MainActivity.this, AddContentActivity.class);
-                intent.putExtra(AddContentActivity.CONTENT, content);
-                intent.putExtra(AddContentActivity.TIME, time);
-                intent.putExtra(AddContentActivity.editImagePath, image);
-                Log.i(TAG, ">>>,put," + image);
+                intent.putExtra("EXT_content", content);
+                intent.putExtra("EXT_time", time);
+                intent.putExtra("EXT_image", image);
+                // Log.i(TAG, ">>>传递的图像：" + image);
                 startActivity(intent);
-//                Log.e(TAG, "点击！！" + position);
             }
 
             // 长按
             @Override
             public void onLongClick(final int position) {
-//                Log.e(TAG, "长按！！" + position);
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("提示框")
-                        .setMessage("是否删除?")
+                        .setMessage("是否删除此事项?")
                         .setPositiveButton("yes",
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-//                                        int position = holder.getAdapterPosition();
                                         String content = contentList.get(position).get("content");
-                                        LitePal.deleteAll(Tickler.class, "content=?", content);
+                                        LitePal.deleteAll(Note.class, "content=?", content);
                                         Toast.makeText(MainActivity.this, "删除成功.", Toast.LENGTH_SHORT).show();
                                         contentList.remove(position);
-                                        Log.e(TAG, "!!!" + contentList);
+                                        Log.i(TAG, ">>>" + contentList);
                                         adapter.notifyItemRemoved(position);
-//                                        adapter.notifyItemRangeChanged(position, contentList.size());
                                     }
                                 })
                         .setNegativeButton("no", null).show();
@@ -133,15 +128,14 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
     }
 
     public void initContent() {
-        List<Tickler> ticklers = LitePal.order("id desc").find(Tickler.class);
-        for (Tickler tickler : ticklers) {
-            String content = tickler.getContent();
-            String time = tickler.getTime();
-            String imgpath = tickler.getArticleImagePath();
+        List<Note> notes = LitePal.order("id desc").find(Note.class);
+        for (Note note : notes) {
+            String content = note.getContent();
+            String time = note.getTime();
+            String imgpath = note.getArticleImagePath();
             Map<String, String> map = new HashMap<>();
             map.put("content", content);
             map.put("time", time);
@@ -149,6 +143,4 @@ public class MainActivity extends AppCompatActivity {
             contentList.add(map);
         }
     }
-
-
 }

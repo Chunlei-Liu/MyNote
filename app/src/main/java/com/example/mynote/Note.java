@@ -2,12 +2,12 @@ package com.example.mynote;
 
 import org.litepal.crud.LitePalSupport;
 
-public class Tickler extends LitePalSupport {
+public class Note extends LitePalSupport {
 
-    private int id;
     private String content;
     private String time;
     private String articleImagePath;
+
 
     public String getArticleImagePath() {
         return articleImagePath;
@@ -15,14 +15,6 @@ public class Tickler extends LitePalSupport {
 
     public void setArticleImagePath(String articleImagePath) {
         this.articleImagePath = articleImagePath;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getContent() {
