@@ -27,7 +27,6 @@ import java.util.Map;
 
 import static com.example.mynote.R.drawable.back_img1;
 import static com.example.mynote.R.drawable.back_img2;
-import static com.example.mynote.R.drawable.back_img3;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,16 +50,13 @@ public class MainActivity extends AppCompatActivity {
         });
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         // 随机更改背景
-        int randomNumber = (int) (Math.random() * 3);
+        int randomNumber = (int) (Math.random() * 2);
         switch (randomNumber) {
             case 0:
                 recyclerView.setBackgroundResource(back_img1);
                 break;
             case 1:
                 recyclerView.setBackgroundResource(back_img2);
-                break;
-            case 2:
-                recyclerView.setBackgroundResource(back_img3);
                 break;
         }
     }

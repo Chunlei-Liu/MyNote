@@ -228,7 +228,6 @@ public class AddContentActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            //一定添加android还有下面这行代码，我当时为这搞了半天
             case android.R.id.home:
                 onBackPressed();
                 return true;
